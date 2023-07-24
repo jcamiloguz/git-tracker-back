@@ -122,8 +122,15 @@ export class RepositoriesService {
         repo: this.repositoriesName[repositoryType],
       });
 
+      const commitsSorted = response.data.sort((a, b) => {
+        return (
+          new Date(a.commit.author.date).getTime() -
+          new Date(b.commit.author.date).getTime()
+        );
+      });
+
       return {
-        data: response.data,
+        data: commitsSorted,
         status: 200,
         message: 'Commits fetched successfully',
       };
