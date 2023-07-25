@@ -39,7 +39,7 @@ To run this project you have 2 options:
 
 1. Clone the repository from GitHub.
 2. Install the dependencies by running `npm install`.
-3. Create the .env.local file with the API of the backend, you can use the .env.example file as a template. The GITHUB_TOKEN is a personal access token that you can create on your GitHub account [here](https://github.com/settings/tokens/new). The FRONTEND_REPO and BACKEND_REPO are the name of the repositories that you want to track. The GITHUB_USERNAME is the username of the owner of the repositories.
+3. Create the .env.local file with the API of the backend, you can use the .env.example file as a template. The GITHUB_TOKEN is **Optional** it will increase your rate limit for the GitHub API, you can create a personal access token on your GitHub account [here](https://github.com/settings/tokens/new). The FRONTEND_REPO and BACKEND_REPO are the name of the repositories that you want to track. The GITHUB_USERNAME is the username of the owner of the repositories.
 
    ```env
    GITHUB_TOKEN={GITHUB_TOKEN}
