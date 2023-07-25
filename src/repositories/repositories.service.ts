@@ -1,7 +1,9 @@
 import {
+  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -21,9 +23,7 @@ export class RepositoriesService {
     try {
       const limit = await this.octokit.rest.rateLimit.get();
       if (limit.data.resources.core.remaining === 0)
-        throw new InternalServerErrorException(
-          'Github API: Rate limit exceeded',
-        );
+        throw new HttpException('Github API: Rate limit exceeded', 429);
 
       const repos = await Promise.all(
         Object.values(this.repositoriesName).map(async (repoName) => {
@@ -48,7 +48,7 @@ export class RepositoriesService {
     } catch (error: unknown) {
       if (
         error instanceof NotFoundException ||
-        error instanceof InternalServerErrorException
+        (error instanceof HttpException && error.getStatus() === 429)
       ) {
         throw error;
       }
@@ -61,6 +61,7 @@ export class RepositoriesService {
           throw new UnauthorizedException();
         }
       }
+      Logger.error(error);
       throw new InternalServerErrorException('Something went wrong');
     }
   }
@@ -72,9 +73,7 @@ export class RepositoriesService {
 
       const limit = await this.octokit.rest.rateLimit.get();
       if (limit.data.resources.core.remaining === 0)
-        throw new InternalServerErrorException(
-          'Github API: Rate limit exceeded',
-        );
+        throw new HttpException('Github API: Rate limit exceeded', 429);
 
       const response = await this.octokit.rest.repos.get({
         owner: process.env.GITHUB_USERNAME,
@@ -88,13 +87,12 @@ export class RepositoriesService {
     } catch (error: unknown) {
       if (
         error instanceof NotFoundException ||
-        error instanceof InternalServerErrorException
+        (error instanceof HttpException && error.getStatus() === 429)
       ) {
         throw error;
       }
 
       if (error instanceof RequestError) {
-        console.log(error.message);
         if (error.status === 404) {
           throw new NotFoundException('Repository not found');
         }
@@ -102,6 +100,7 @@ export class RepositoriesService {
           throw new UnauthorizedException();
         }
       }
+      Logger.error(error);
       throw new InternalServerErrorException('Something went wrong');
     }
   }
@@ -113,9 +112,7 @@ export class RepositoriesService {
 
       const limit = await this.octokit.rest.rateLimit.get();
       if (limit.data.resources.core.remaining === 0)
-        throw new InternalServerErrorException(
-          'Github API: Rate limit exceeded',
-        );
+        throw new HttpException('Github API: Rate limit exceeded', 429);
 
       const response = await this.octokit.rest.repos.listCommits({
         owner: process.env.GITHUB_USERNAME,
@@ -137,7 +134,7 @@ export class RepositoriesService {
     } catch (error: unknown) {
       if (
         error instanceof NotFoundException ||
-        error instanceof InternalServerErrorException
+        (error instanceof HttpException && error.getStatus() === 429)
       ) {
         throw error;
       }
@@ -150,6 +147,7 @@ export class RepositoriesService {
           throw new UnauthorizedException();
         }
       }
+      Logger.error(error);
       throw new InternalServerErrorException('Something went wrong');
     }
   }
